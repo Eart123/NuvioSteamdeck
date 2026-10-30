@@ -85,7 +85,8 @@ jobs:
         run: |
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
             # Tag push: use tag name (e.g., v1.0.0 -> 1.0.0)
-            VERSION="${{ github.ref_name#v }}"
+            VERSION="${{ github.ref_name }}"
+            VERSION="${VERSION#v}"
           else
             # Branch push: use timestamp-based version
             VERSION="0.1.0-dev.$(date +%Y%m%d%H%M)"
