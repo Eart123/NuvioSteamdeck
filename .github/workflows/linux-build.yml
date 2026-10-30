@@ -2,10 +2,10 @@ name: Linux Build
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, Dev]
     tags: ['v*']
   pull_request:
-    branches: [main, master]
+    branches: [main, master, Dev]
   workflow_dispatch:
 
 permissions:
@@ -22,8 +22,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive
           fetch-depth: 0
+          # submodules: recursive  # DISABLED - libass-android URL missing in fork
+
+      - name: Initialize MPVKit submodule only
+        run: |
+          git submodule update --init MPVKit
 
       - name: Setup JDK 21
         uses: actions/setup-java@v4
@@ -139,3 +143,12 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify build status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Linux build successful!"
+          else
+            echo "❌ Linux build failed!"
+          fi
