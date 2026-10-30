@@ -112,6 +112,13 @@ internal actual object PlayerSettingsStorage {
     private const val iosSaturationKey = "ios_saturation"
     private const val iosGammaKey = "ios_gamma"
     private const val nvidiaRtxSuperResolutionEnabledKey = "nvidia_rtx_super_resolution_enabled"
+    // Gamepad & Touch settings (Linux/Steam Deck)
+    private const val gamepadEnabledKey = "gamepad_enabled"
+    private const val gamepadHapticEnabledKey = "gamepad_haptic_enabled"
+    private const val gamepadDeadzoneKey = "gamepad_deadzone"
+    private const val touchHapticEnabledKey = "touch_haptic_enabled"
+    private const val touchEdgeSwipeEnabledKey = "touch_edge_swipe_enabled"
+    private const val steamDeckAutoDetectKey = "steam_deck_auto_detect"
     private val syncKeys = listOf(
         showLoadingOverlayKey,
         showPlayerLoadingStatusKey,
@@ -203,6 +210,13 @@ internal actual object PlayerSettingsStorage {
         iosContrastKey,
         iosSaturationKey,
         iosGammaKey,
+        // Gamepad & Touch settings (Linux/Steam Deck)
+        gamepadEnabledKey,
+        gamepadHapticEnabledKey,
+        gamepadDeadzoneKey,
+        touchHapticEnabledKey,
+        touchEdgeSwipeEnabledKey,
+        steamDeckAutoDetectKey,
     )
     private val store = DesktopStorage.store("nuvio_player_settings")
 
@@ -402,6 +416,20 @@ internal actual object PlayerSettingsStorage {
     actual fun loadNvidiaRtxSuperResolutionEnabled(): Boolean? = loadBoolean(nvidiaRtxSuperResolutionEnabledKey)
     actual fun saveNvidiaRtxSuperResolutionEnabled(enabled: Boolean) = saveBoolean(nvidiaRtxSuperResolutionEnabledKey, enabled)
 
+    // Gamepad & Touch settings (Linux/Steam Deck)
+    actual fun loadGamepadEnabled(): Boolean? = loadBoolean(gamepadEnabledKey)
+    actual fun saveGamepadEnabled(enabled: Boolean) = saveBoolean(gamepadEnabledKey, enabled)
+    actual fun loadGamepadHapticEnabled(): Boolean? = loadBoolean(gamepadHapticEnabledKey)
+    actual fun saveGamepadHapticEnabled(enabled: Boolean) = saveBoolean(gamepadHapticEnabledKey, enabled)
+    actual fun loadGamepadDeadzone(): Float? = loadFloat(gamepadDeadzoneKey)
+    actual fun saveGamepadDeadzone(deadzone: Float) = saveFloat(gamepadDeadzoneKey, deadzone)
+    actual fun loadTouchHapticEnabled(): Boolean? = loadBoolean(touchHapticEnabledKey)
+    actual fun saveTouchHapticEnabled(enabled: Boolean) = saveBoolean(touchHapticEnabledKey, enabled)
+    actual fun loadTouchEdgeSwipeEnabled(): Boolean? = loadBoolean(touchEdgeSwipeEnabledKey)
+    actual fun saveTouchEdgeSwipeEnabled(enabled: Boolean) = saveBoolean(touchEdgeSwipeEnabledKey, enabled)
+    actual fun loadSteamDeckAutoDetect(): Boolean? = loadBoolean(steamDeckAutoDetectKey)
+    actual fun saveSteamDeckAutoDetect(enabled: Boolean) = saveBoolean(steamDeckAutoDetectKey, enabled)
+
     private fun scoped(key: String): String = ProfileScopedKey.of(key)
     private fun loadString(key: String): String? = store.getString(scoped(key))
     private fun saveString(key: String, value: String) = store.putString(scoped(key), value)
@@ -499,6 +527,13 @@ internal actual object PlayerSettingsStorage {
         loadIosSaturation()?.let { put(iosSaturationKey, encodeSyncInt(it)) }
         loadIosGamma()?.let { put(iosGammaKey, encodeSyncInt(it)) }
         loadNvidiaRtxSuperResolutionEnabled()?.let { put(nvidiaRtxSuperResolutionEnabledKey, encodeSyncBoolean(it)) }
+        // Gamepad & Touch settings (Linux/Steam Deck)
+        loadGamepadEnabled()?.let { put(gamepadEnabledKey, encodeSyncBoolean(it)) }
+        loadGamepadHapticEnabled()?.let { put(gamepadHapticEnabledKey, encodeSyncBoolean(it)) }
+        loadGamepadDeadzone()?.let { put(gamepadDeadzoneKey, encodeSyncFloat(it)) }
+        loadTouchHapticEnabled()?.let { put(touchHapticEnabledKey, encodeSyncBoolean(it)) }
+        loadTouchEdgeSwipeEnabled()?.let { put(touchEdgeSwipeEnabledKey, encodeSyncBoolean(it)) }
+        loadSteamDeckAutoDetect()?.let { put(steamDeckAutoDetectKey, encodeSyncBoolean(it)) }
     }
 
     actual fun replaceFromSyncPayload(payload: JsonObject) {
@@ -586,5 +621,12 @@ internal actual object PlayerSettingsStorage {
         payload.decodeSyncInt(iosSaturationKey)?.let(::saveIosSaturation)
         payload.decodeSyncInt(iosGammaKey)?.let(::saveIosGamma)
         payload.decodeSyncBoolean(nvidiaRtxSuperResolutionEnabledKey)?.let(::saveNvidiaRtxSuperResolutionEnabled)
+        // Gamepad & Touch settings (Linux/Steam Deck)
+        payload.decodeSyncBoolean(gamepadEnabledKey)?.let(::saveGamepadEnabled)
+        payload.decodeSyncBoolean(gamepadHapticEnabledKey)?.let(::saveGamepadHapticEnabled)
+        payload.decodeSyncFloat(gamepadDeadzoneKey)?.let(::saveGamepadDeadzone)
+        payload.decodeSyncBoolean(touchHapticEnabledKey)?.let(::saveTouchHapticEnabled)
+        payload.decodeSyncBoolean(touchEdgeSwipeEnabledKey)?.let(::saveTouchEdgeSwipeEnabled)
+        payload.decodeSyncBoolean(steamDeckAutoDetectKey)?.let(::saveSteamDeckAutoDetect)
     }
 }

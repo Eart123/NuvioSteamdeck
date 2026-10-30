@@ -192,6 +192,21 @@ internal expect object PlayerSettingsStorage {
     fun saveIosGamma(value: Int)
     fun loadNvidiaRtxSuperResolutionEnabled(): Boolean?
     fun saveNvidiaRtxSuperResolutionEnabled(enabled: Boolean)
+
+    // Gamepad & Touch settings (Linux/Steam Deck)
+    fun loadGamepadEnabled(): Boolean?
+    fun saveGamepadEnabled(enabled: Boolean)
+    fun loadGamepadHapticEnabled(): Boolean?
+    fun saveGamepadHapticEnabled(enabled: Boolean)
+    fun loadGamepadDeadzone(): Float?
+    fun saveGamepadDeadzone(deadzone: Float)
+    fun loadTouchHapticEnabled(): Boolean?
+    fun saveTouchHapticEnabled(enabled: Boolean)
+    fun loadTouchEdgeSwipeEnabled(): Boolean?
+    fun saveTouchEdgeSwipeEnabled(enabled: Boolean)
+    fun loadSteamDeckAutoDetect(): Boolean?
+    fun saveSteamDeckAutoDetect(enabled: Boolean)
+
     fun exportToSyncPayload(): JsonObject
     fun replaceFromSyncPayload(payload: JsonObject)
 }

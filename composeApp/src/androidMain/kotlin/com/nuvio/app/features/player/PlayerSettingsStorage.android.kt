@@ -1407,6 +1407,19 @@ actual object PlayerSettingsStorage {
             ?.apply()
     }
 
+    // Gamepad & Touch settings (Linux/Steam Deck) - not applicable on Android, return defaults
+    actual fun loadGamepadEnabled(): Boolean? = true
+    actual fun saveGamepadEnabled(enabled: Boolean) {}
+    actual fun loadGamepadHapticEnabled(): Boolean? = true
+    actual fun saveGamepadHapticEnabled(enabled: Boolean) {}
+    actual fun loadGamepadDeadzone(): Float? = 0.2f
+    actual fun saveGamepadDeadzone(deadzone: Float) {}
+    actual fun loadTouchHapticEnabled(): Boolean? = true
+    actual fun saveTouchHapticEnabled(enabled: Boolean) {}
+    actual fun loadTouchEdgeSwipeEnabled(): Boolean? = true
+    actual fun saveTouchEdgeSwipeEnabled(enabled: Boolean) {}
+    actual fun loadSteamDeckAutoDetect(): Boolean? = true
+    actual fun saveSteamDeckAutoDetect(enabled: Boolean) {}
 
     actual fun exportToSyncPayload(): JsonObject = buildJsonObject {
         loadShowLoadingOverlay()?.let { put(showLoadingOverlayKey, encodeSyncBoolean(it)) }
@@ -1575,5 +1588,12 @@ actual object PlayerSettingsStorage {
         payload.decodeSyncInt(iosSaturationKey)?.let(::saveIosSaturation)
         payload.decodeSyncInt(iosGammaKey)?.let(::saveIosGamma)
         payload.decodeSyncBoolean(nvidiaRtxSuperResolutionEnabledKey)?.let(::saveNvidiaRtxSuperResolutionEnabled)
+        // Gamepad & Touch settings (Linux/Steam Deck) - not applicable on Android, return defaults
+        payload.decodeSyncBoolean(gamepadEnabledKey)?.let(::saveGamepadEnabled)
+        payload.decodeSyncBoolean(gamepadHapticEnabledKey)?.let(::saveGamepadHapticEnabled)
+        payload.decodeSyncFloat(gamepadDeadzoneKey)?.let(::saveGamepadDeadzone)
+        payload.decodeSyncBoolean(touchHapticEnabledKey)?.let(::saveTouchHapticEnabled)
+        payload.decodeSyncBoolean(touchEdgeSwipeEnabledKey)?.let(::saveTouchEdgeSwipeEnabled)
+        payload.decodeSyncBoolean(steamDeckAutoDetectKey)?.let(::saveSteamDeckAutoDetect)
     }
 }

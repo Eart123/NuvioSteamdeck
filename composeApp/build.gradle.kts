@@ -1187,6 +1187,7 @@ kotlin {
                 implementation(libs.ksoup)
                 implementation(libs.sentry.jvm)
                 implementation(libs.jna)
+                implementation(libs.libsdl4j)
                 implementation(files("libs/nuvio-engine-jvm-0.1.6.jar"))
             }
         }
