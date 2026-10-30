@@ -80,12 +80,25 @@ jobs:
             wget \
             unzip
 
+      - name: Generate version
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            # Tag push: use tag name (e.g., v1.0.0 -> 1.0.0)
+            VERSION="${{ github.ref_name#v }}"
+          else
+            # Branch push: use timestamp-based version
+            VERSION="0.1.0-dev.$(date +%Y%m%d%H%M)"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version_code=$(date +%s)" >> $GITHUB_OUTPUT
+
       - name: Build Linux DEB + AppImage
         run: |
           ./gradlew :composeApp:packageReleaseDeb :composeApp:packageReleaseAppImage \
             --no-daemon \
-            -Pnuvio.desktop.versionName=${{ github.ref_name }} \
-            -Pnuvio.desktop.versionCode=${{ github.run_number }}
+            -Pnuvio.desktop.versionName=${{ steps.version.outputs.version }} \
+            -Pnuvio.desktop.versionCode=${{ steps.version.outputs.version_code }}
         env:
           GRADLE_OPTS: "-Xmx4g -Dorg.gradle.daemon=false"
 
