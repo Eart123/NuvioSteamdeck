@@ -92,20 +92,29 @@ jobs:
       - name: Generate version
         id: version
         run: |
-          if [ "${{ github.ref_type }}" = "tag" ]; then
-            VERSION="${{ github.ref_name }}"
-            VERSION="${VERSION#v}"
+          echo "DEBUG: github.ref_type = ${{ github.ref_type }}"
+          echo "DEBUG: github.ref_name = ${{ github.ref_name }}"
+          echo "DEBUG: Checking for DesktopVersion.properties..."
+          if [ -f "composeApp/Configuration/DesktopVersion.properties" ]; then
+            echo "DEBUG: File exists"
+            cat composeApp/Configuration/DesktopVersion.properties
+            VERSION=$(grep "VERSION_NAME=" composeApp/Configuration/DesktopVersion.properties | cut -d'=' -f2)
+            echo "DEBUG: Raw VERSION from file: '$VERSION'"
+            VERSION="${VERSION%%-*}"
+            echo "DEBUG: Stripped VERSION: '$VERSION'"
           else
-            if [ -f "composeApp/Configuration/DesktopVersion.properties" ]; then
-              VERSION=$(grep "VERSION_NAME=" composeApp/Configuration/DesktopVersion.properties | cut -d'=' -f2)
-              VERSION="${VERSION%%-*}"
-            else
-              VERSION="0.1.0-dev.$(date +%Y%m%d%H%M)"
-            fi
+            echo "DEBUG: File not found, using fallback"
+            VERSION="0.1.0-dev.$(date +%Y%m%d%H%M)"
           fi
+          echo "DEBUG: Final VERSION = '$VERSION'"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "version_code=$(date +%s)" >> $GITHUB_OUTPUT
         shell: bash
+
+      - name: Debug version output
+        run: |
+          echo "Generated version: ${{ steps.version.outputs.version }}"
+          echo "Version code: ${{ steps.version.outputs.version_code }}"
 
       - name: Build Linux DEB + AppImage
         run: |
