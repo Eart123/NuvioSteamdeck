@@ -177,15 +177,21 @@ jobs:
       - name: Find artifacts
         id: artifacts
         run: |
+          echo "=== Searching in composeApp/build ==="
           echo "deb=$(find composeApp/build -name '*.deb' -type f | head -1)" >> $GITHUB_OUTPUT
           echo "appimage=$(find composeApp/build -name '*.AppImage' -type f | head -1)" >> $GITHUB_OUTPUT
           echo "tar=$(find composeApp/build -name '*.tar.gz' -type f | head -1)" >> $GITHUB_OUTPUT
-          echo "=== All DEBs ==="
           find composeApp/build -name '*.deb' -type f
-          echo "=== All AppImages ==="
           find composeApp/build -name '*.AppImage' -type f
-          echo "=== All tarballs ==="
           find composeApp/build -name '*.tar.gz' -type f
+          echo "=== Searching in composeApp/build/compose ==="
+          find composeApp/build/compose -name '*.AppImage' -type f 2>/dev/null || echo "No AppImages in composeApp/build/compose"
+          find composeApp/build/compose -name '*.deb' -type f 2>/dev/null || echo "No DEBs in composeApp/build/compose"
+          find composeApp/build/compose -name '*.tar.gz' -type f 2>/dev/null || echo "No tarballs in composeApp/build/compose"
+          echo "=== Searching in root build ==="
+          find build -name '*.AppImage' -type f 2>/dev/null || echo "No AppImages in root build"
+          find build -name '*.deb' -type f 2>/dev/null || echo "No DEBs in root build"
+          find build -name '*.tar.gz' -type f 2>/dev/null || echo "No tarballs in root build"
 
       - name: Upload DEB artifact
         if: ${{ steps.artifacts.outputs.deb != '' }}
