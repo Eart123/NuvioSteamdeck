@@ -1345,6 +1345,8 @@ compose.desktop {
                 shortcut = true
                 menuGroup = "Nuvio"
                 appCategory = "AudioVideo"
+                // DEB paketi için revision numarası (DEB dosyası nuvio_X.Y.Z-1_amd64.deb formatında olmalı)
+                linuxAppRelease = "1"
             }
         }
 
