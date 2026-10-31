@@ -27,7 +27,8 @@ jobs:
 
       - name: Initialize MPVKit submodule (ignore failure)
         run: |
-          git submodule update --init MPVKit || echo "MPVKit submodule init failed, continuing without it"
+          git submodule update --init MPVKit 2>/dev/null || echo "MPVKit submodule init failed, continuing without it"
+        shell: bash
 
       - name: Setup JDK 21
         uses: actions/setup-java@v5
