@@ -30,13 +30,6 @@ jobs:
           git submodule update --init MPVKit 2>/dev/null || echo "MPVKit submodule init failed, continuing without it"
         shell: bash
 
-      - name: Create local.properties
-        run: |
-          cat > local.properties << 'EOF'
-          # Empty local.properties for CI - required by generateRuntimeConfigs task
-          # Actual values are not needed for Linux build
-          EOF
-
       - name: Setup JDK 21
         uses: actions/setup-java@v5
         with:
@@ -97,9 +90,15 @@ jobs:
             VERSION="${{ github.ref_name }}"
             VERSION="${VERSION#v}"
           else
-            # Branch push: use timestamp-based version
-            VERSION="0.1.0-dev.$(date +%Y%m%d%H%M)"
-          fi
+            # Branch push: read version from DesktopVersion.properties
+            if [[ -f "composeApp/Configuration/DesktopVersion.properties" ]]; then
+              VERSION=$(grep "VERSION_NAME=" composeApp/Configuration/DesktopVersion.properties | cut -d'=' -f2)
+              # Remove any suffix like -alpha, -beta
+              VERSION="${VERSION%%-*}"
+            else
+              # Fallback: timestamp-based version
+              VERSION="0.1.0-dev.$(date +%Y%m%d%H%M)"
+            fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "version_code=$(date +%s)" >> $GITHUB_OUTPUT
 
