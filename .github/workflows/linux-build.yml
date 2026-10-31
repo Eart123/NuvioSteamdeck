@@ -166,9 +166,9 @@ jobs:
         env:
           GRADLE_OPTS: "-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.native.enableKlibsCrossCompilation=false"
 
-      - name: Upload build log on failure
-        if: failure()
+      - name: Upload build log
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: gradle-build-log
           path: gradle-build.log
@@ -180,6 +180,12 @@ jobs:
           echo "deb=$(find composeApp/build -name '*.deb' -type f | head -1)" >> $GITHUB_OUTPUT
           echo "appimage=$(find composeApp/build -name '*.AppImage' -type f | head -1)" >> $GITHUB_OUTPUT
           echo "tar=$(find composeApp/build -name '*.tar.gz' -type f | head -1)" >> $GITHUB_OUTPUT
+          echo "=== All DEBs ==="
+          find composeApp/build -name '*.deb' -type f
+          echo "=== All AppImages ==="
+          find composeApp/build -name '*.AppImage' -type f
+          echo "=== All tarballs ==="
+          find composeApp/build -name '*.tar.gz' -type f
 
       - name: Upload DEB artifact
         if: ${{ steps.artifacts.outputs.deb != '' }}
