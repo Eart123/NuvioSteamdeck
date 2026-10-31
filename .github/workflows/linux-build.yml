@@ -117,6 +117,23 @@ jobs:
             xauth \
             xvfb
 
+      - name: Install appimagetool
+        run: |
+          APPIMAGETOOL_VERSION=1.9.1
+          APPIMAGETOOL_SHA256=ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0
+          appimagetool_path="/usr/local/bin/appimagetool"
+          curl -fsSL -o "${appimagetool_path}" \
+            "https://github.com/AppImage/appimagetool/releases/download/${APPIMAGETOOL_VERSION}/appimagetool-x86_64.AppImage"
+          actual_sha256="$(sha256sum "${appimagetool_path}" | awk '{print $1}')"
+          if [[ "${actual_sha256}" != "${APPIMAGETOOL_SHA256}" ]]; then
+            echo "appimagetool checksum mismatch." >&2
+            echo "Expected: ${APPIMAGETOOL_SHA256}" >&2
+            echo "Actual:   ${actual_sha256}" >&2
+            exit 1
+          fi
+          chmod +x "${appimagetool_path}"
+          echo "appimagetool installed at ${appimagetool_path}"
+
       - name: Verify pkg-config packages
         run: |
           echo "=== Checking pkg-config packages ==="
@@ -165,6 +182,7 @@ jobs:
             -PlinuxAppRelease=1 2>&1 | tee gradle-build.log
         env:
           GRADLE_OPTS: "-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.native.enableKlibsCrossCompilation=false"
+          APPIMAGETOOL: /usr/local/bin/appimagetool
 
       - name: Upload build log
         uses: actions/upload-artifact@v4
