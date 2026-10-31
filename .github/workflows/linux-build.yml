@@ -117,6 +117,15 @@ jobs:
             xauth \
             xvfb
 
+      - name: Verify pkg-config packages
+        run: |
+          echo "=== Checking pkg-config packages ==="
+          for pkg in mpv webkit2gtk-4.1 gtk+-3.0 x11 xcomposite xext; do
+            echo "Checking $pkg..."
+            pkg-config --cflags --libs $pkg || echo "WARNING: $pkg not found"
+          done
+          echo "=== pkg-config check complete ==="
+
       - name: Generate version
         id: version
         run: |
@@ -153,9 +162,17 @@ jobs:
             --stacktrace \
             -Pnuvio.desktop.versionName=${{ steps.version.outputs.version }} \
             -Pnuvio.desktop.versionCode=${{ steps.version.outputs.version_code }} \
-            -PlinuxAppRelease=1
+            -PlinuxAppRelease=1 2>&1 | tee gradle-build.log
         env:
           GRADLE_OPTS: "-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.native.enableKlibsCrossCompilation=false"
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-log
+          path: gradle-build.log
+          retention-days: 30
 
       - name: Find artifacts
         id: artifacts
