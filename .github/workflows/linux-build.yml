@@ -117,7 +117,8 @@ jobs:
             --no-daemon \
             --no-configuration-cache \
             -Pnuvio.desktop.versionName=${{ steps.version.outputs.version }} \
-            -Pnuvio.desktop.versionCode=${{ steps.version.outputs.version_code }}
+            -Pnuvio.desktop.versionCode=${{ steps.version.outputs.version_code }} \
+            -PlinuxAppRelease=1
         env:
           GRADLE_OPTS: "-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.native.enableKlibsCrossCompilation=false"
 
@@ -146,7 +147,7 @@ jobs:
 
       - name: Upload Tarball artifact
         if: ${{ steps.artifacts.outputs.tar != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions.upload-artifact@v4
         with:
           name: nuvio-tarball
           path: ${{ steps.artifacts.outputs.tar }}
