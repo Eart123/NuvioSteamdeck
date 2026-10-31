@@ -93,17 +93,13 @@ jobs:
         id: version
         run: |
           if [ "${{ github.ref_type }}" = "tag" ]; then
-            # Tag push: use tag name (e.g., v1.0.0 -> 1.0.0)
             VERSION="${{ github.ref_name }}"
             VERSION="${VERSION#v}"
           else
-            # Branch push: read version from DesktopVersion.properties
             if [ -f "composeApp/Configuration/DesktopVersion.properties" ]; then
               VERSION=$(grep "VERSION_NAME=" composeApp/Configuration/DesktopVersion.properties | cut -d'=' -f2)
-              # Remove any suffix like -alpha, -beta
               VERSION="${VERSION%%-*}"
             else
-              # Fallback: timestamp-based version
               VERSION="0.1.0-dev.$(date +%Y%m%d%H%M)"
             fi
           fi
@@ -147,7 +143,7 @@ jobs:
 
       - name: Upload Tarball artifact
         if: ${{ steps.artifacts.outputs.tar != '' }}
-        uses: actions.upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: nuvio-tarball
           path: ${{ steps.artifacts.outputs.tar }}
