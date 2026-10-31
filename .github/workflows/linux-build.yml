@@ -170,6 +170,10 @@ jobs:
           echo "Generated version: ${{ steps.version.outputs.version }}"
           echo "Version code: ${{ steps.version.outputs.version_code }}"
 
+      - name: List AppImage tasks
+        run: |
+          ./gradlew :composeApp:tasks --all | grep -i appimage || echo "No AppImage tasks found"
+
       - name: Build Linux DEB + AppImage
         run: |
           ./gradlew :composeApp:packageReleaseDeb :composeApp:packageReleaseAppImage \
