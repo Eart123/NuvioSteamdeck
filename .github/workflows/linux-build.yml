@@ -172,28 +172,44 @@ jobs:
 
       - name: List AppImage tasks
         run: |
+          echo "=== Available AppImage tasks ==="
           ./gradlew :composeApp:tasks --all | grep -i appimage || echo "No AppImage tasks found"
 
-      - name: Build Linux DEB + AppImage
+      - name: Build Linux DEB
         run: |
-          ./gradlew :composeApp:packageReleaseDeb :composeApp:packageReleaseAppImage \
+          ./gradlew :composeApp:packageReleaseDeb \
             --no-daemon \
             --no-configuration-cache \
             --info \
             --stacktrace \
             -Pnuvio.desktop.versionName=${{ steps.version.outputs.version }} \
             -Pnuvio.desktop.versionCode=${{ steps.version.outputs.version_code }} \
-            -PlinuxAppRelease=1 2>&1 | tee gradle-build.log
+            -PlinuxAppRelease=1 2>&1 | tee gradle-build-deb.log
+        env:
+          GRADLE_OPTS: "-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.native.enableKlibsCrossCompilation=false"
+
+      - name: Build Linux AppImage
+        run: |
+          ./gradlew :composeApp:packageReleaseAppImage \
+            --no-daemon \
+            --no-configuration-cache \
+            --info \
+            --stacktrace \
+            -Pnuvio.desktop.versionName=${{ steps.version.outputs.version }} \
+            -Pnuvio.desktop.versionCode=${{ steps.version.outputs.version_code }} \
+            -PlinuxAppRelease=1 2>&1 | tee gradle-build-appimage.log
         env:
           GRADLE_OPTS: "-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.native.enableKlibsCrossCompilation=false"
           APPIMAGETOOL: /usr/local/bin/appimagetool
 
-      - name: Upload build log
+      - name: Upload build logs
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: gradle-build-log
-          path: gradle-build.log
+          name: gradle-build-logs
+          path: |
+            gradle-build-deb.log
+            gradle-build-appimage.log
           retention-days: 30
 
       - name: Find artifacts
